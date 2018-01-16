@@ -1,5 +1,17 @@
 import csv
 
+from_cd = {}
+field_cd = {}
+zip_cd = {}
+use = [
+    'id', 'gender', 'age', 'field', 'undergrd', 'tuiton', 'race', 'imprace',
+    'imprelig', 'from', 'zipcode', 'income', 'goal', 'date', 'go_out',
+    'career', 'sport', 'tvsports', 'excersice', 'dining', 'museums', 'art',
+    'hiking', 'gaming', 'clubbing', 'reading', 'tv', 'theater', 'movies',
+    'concerts', 'music', 'shopping', 'yoga', 'exphappy', 'expnum',
+    'match_es', 'length'
+]
+
 def toInt(s):
     try:
         ret = int(s)
@@ -7,20 +19,27 @@ def toInt(s):
     except ValueError:
         return s
 
+def encodeFrom(value):
+    if not value in from_cd.keys():
+        from_cd[value] = len(from_cd)
+    return from_cd[value]
+
+def encodeZip(value):
+    if not value in zip_cd.keys():
+        zip_cd[value] = len(zip_cd)
+    return zip_cd[value]
+
+def encodeField(value):
+    if not value in field_cd.keys():
+        field_cd[value] = len(field_cd)
+    return field_cd[value]
+
 def readFile():
     keys = []
     data = []
-    use = [
-        'id', 'gender', 'age', 'field', 'undergrd', 'tuiton', 'race', 'imprace',
-        'imprelig', 'from', 'zipcode', 'income', 'goal', 'date', 'go_out',
-        'career', 'sport', 'tvsports', 'excersice', 'dining', 'museums', 'art',
-        'hiking', 'gaming', 'clubbing', 'reading', 'tv', 'theater', 'movies',
-        'concerts', 'music', 'shopping', 'yoga', 'exphappy', 'expnum',
-        'match_es', 'length'
-    ]
     indexes = []
-    i = 0
 
+    i = 0
     with open('data.csv', 'rb') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
@@ -37,7 +56,7 @@ def readFile():
                 for j in indexes:
                     data[i - 1].update({keys[j]: toInt(row[j])})
             i += 1
-    print data[0]
+    print data[:5]
     return data
 
 def main():
