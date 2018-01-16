@@ -7,15 +7,67 @@ def toInt(s):
     except ValueError:
         return s
 
+percentage = {
+    'age': 80,
+    'field': 50,
+    'undergrd': 50,
+    'tuiton': 40,
+    'race': 40,
+    'imprace': 30,
+    'imprelig': 30,
+    'from': 60,
+    'zipcode': 15,
+    'income': 45,
+    'goal': 30,
+    'date': 30,
+    'go_out': 40,
+    'career': 45,
+    'sport': 30,
+    'sports': 30,
+    'tvsports': 30,
+    'excersice': 35,
+    'dining': 50,
+    'museums': 30,
+    'art': '55',
+    'hiking': 30,
+    'gaming': 30,
+    'clubbing': 30,
+    'reading': 30,
+    'tv': 30,
+    'theater': 40,
+    'movies': 45,
+    'concerts': 35,
+    'music': 60,
+    'shopping': 35,
+    'yoga': 30,
+    'exphappy': 30,
+    'expnum': 30,
+    'match_es': 30,
+    'match': 30,
+    'length': 45,
+}
+
+seuil = 150
+
+def get_percentage(dat, d):
+    count_percentage = 0
+    if dat['gender'] == d['gender']:
+        return 0
+    shared_items = set(dat.items()) & set(d.items())
+    for key, val in shared_items:
+        if val and key and key != "id":
+            count_percentage += int(percentage[key])
+    return count_percentage
+
+
 def createGraph(data):
     graph = []
     for dat in data:
         i = 0
-        if len(graph) == 0 or (len(graph) > 0 and graph[-1]):
-            graph.append([])
+        graph.append([])
         for d in data:
-            shared_items = set(dat.items()) & set(d.items())
-            if d != dat and len(shared_items) > 0:
+            shared_items = get_percentage(dat, d)
+            if d != dat and shared_items > seuil:
                 graph[-1].append(i)
             i += 1
     print(graph)
