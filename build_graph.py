@@ -7,6 +7,20 @@ def toInt(s):
     except ValueError:
         return s
 
+def createGraph(data):
+    graph = []
+    for dat in data:
+        i = 0
+        if len(graph) == 0 or (len(graph) > 0 and graph[-1]):
+            graph.append([])
+        for d in data:
+            shared_items = set(dat.items()) & set(d.items())
+            if d != dat and len(shared_items) > 0:
+                graph[-1].append(i)
+            i += 1
+    print(graph)
+    return graph
+
 def readFile():
     keys = []
     data = []
@@ -42,5 +56,6 @@ def readFile():
 
 def main():
     data = readFile()
+    graph = createGraph(data)
 
 main()
