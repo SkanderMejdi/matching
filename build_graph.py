@@ -5,8 +5,9 @@ from_cd = {}
 career_cd = {}
 field_cd = {}
 zip_cd = {}
+undergra_cd = {}
 use = [
-    'id', 'gender', 'age', 'field', 'undergrd', 'tuiton', 'race', 'imprace',
+    'id', 'gender', 'age', 'field', 'undergra', 'tuiton', 'race', 'imprace',
     'imprelig', 'from', 'zipcode', 'income', 'goal', 'date', 'go_out',
     'career', 'sports', 'tvsports', 'excersice', 'dining', 'museums', 'art',
     'hiking', 'gaming', 'clubbing', 'reading', 'tv', 'theater', 'movies',
@@ -14,7 +15,7 @@ use = [
     'match_es', 'length'
 ]
 percentage = {
-    'age': 80, 'field': 50, 'undergrd': 50, 'tuiton': 40, 'race': 40,
+    'age': 80, 'field': 50, 'undergra': 50, 'tuiton': 40, 'race': 40,
     'imprace': 30, 'imprelig': 30, 'from': 60, 'zipcode': 15, 'income': 45,
     'goal': 30, 'date': 30, 'go_out': 40, 'career': 45, 'sports': 30,
     'tvsports': 30, 'excersice': 35, 'dining': 50, 'museums': 30, 'art': 55,
@@ -24,7 +25,6 @@ percentage = {
     'length': 45
 }
 seuil = 200
-
 
 def toInt(s):
     try:
@@ -56,7 +56,7 @@ def createGraph(data):
             if candidate != node['elem'] and strength > seuil:
                 # print str(candidate['id']) + ':' + str(node['elem']['id'])
                 node['links'].append({
-                    'node': candidate['id'],
+                    'elem': candidate,
                     'strength': strength
                 })
     return graph
@@ -65,6 +65,11 @@ def encodeFrom(value):
     if not value in from_cd.keys():
         from_cd[value] = len(from_cd)
     return from_cd[value]
+
+def encodeUndergra(value):
+    if not value in undergra_cd.keys():
+        undergra_cd[value] = len(undergra_cd)
+    return undergra_cd[value]
 
 def encodeZip(value):
     if not value in zip_cd.keys():
@@ -113,27 +118,44 @@ vars_treatment = {
     'match_es': normalizeMatchEs,
     'zipcode': encodeZip,
     "field": encodeField,
+    "undergra": encodeUndergra,
     "career": encodeCareer
 }
 
-def readFile():
-    keys = []
-    data = []
-    indexes = []
+def getJmp():
+    with open('data.csv', 'rb') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        jmp = (sum(1 for line in reader) - 1) / 500
+        csvfile.close()
+    return jmp
 
+def getIndexes(row):
+    j = 0
+    keys = []
+    indexes = []
+    global global_id
+
+    for key in row:
+        if any(key in elem for elem in use):
+            indexes.append(j)
+        keys.append(key)
+        j += 1
+    global_id += 1
+    return indexes, keys
+
+def readFile():
+    data = []
+
+    i = 0
+    jmp = getJmp()
     global global_id
     with open('data.csv', 'rb') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
             row = row[:-1]
             if global_id == 0:
-                j = 0
-                for key in row:
-                    if any(key in elem for elem in use):
-                        indexes.append(j)
-                    keys.append(key)
-                    j += 1
-            else:
+                indexes, keys = getIndexes(row)
+            elif float(i) % jmp == 0:
                 data.append({})
                 for j in indexes:
                     if row[j] != '' and keys[j] in vars_treatment.keys():
@@ -144,7 +166,8 @@ def readFile():
                         data[global_id - 1].update({
                             keys[j]: toInt(row[j])
                         })
-            global_id += 1
+                global_id += 1
+            i += 1
     return data
 
 def main():
