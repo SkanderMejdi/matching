@@ -169,9 +169,3 @@ def readFile():
                 global_id += 1
             i += 1
     return data
-
-def main():
-    data = readFile()
-    graph = createGraph(data)
-
-main()
