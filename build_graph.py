@@ -79,21 +79,13 @@ def createGraph(data):
             'links': []
         })
     for node in graph:
-        print 'links for '+str(node['elem']['id'])
-        print '_______________________'
         bottom = 2800
         top = 0
         for candidate in data:
-            print 'test match for '+str(candidate['id'])
-            strength = getLinkStrength(elem, candidate)
-            print 'strenght: '+str(strength)
-            print ''
+            strength = getLinkStrength(node['elem'], candidate)
             if candidate != node['elem'] and strength > seuil:
-                # print str(candidate['id']) + ':' + str(node['elem']['id']) + ' :' + str(strength) + ' gaming : ' + str(candidate['gaming']) + ':' + str(node['elem']['gaming'])
-                print str(candidate['id']) + ':' + str(node['elem']['id'])
                 top, bottom = createLink(node, candidate, top, bottom, strength)
         linkToPercent(node, top - bottom)
-        # print '----------------------'
     return graph
 
 def encodeFrom(value):
@@ -203,4 +195,5 @@ def readFile():
                         })
                 global_id += 1
             i += 1
+    # TODO: delete cut
     return data[:10]
