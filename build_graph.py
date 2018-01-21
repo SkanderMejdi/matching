@@ -14,17 +14,24 @@ use = [
     'concerts', 'music', 'shopping', 'yoga', 'exphappy', 'expnum',
     'match_es', 'length'
 ]
-percentage = {
-    'age': 80, 'field': 50, 'undergra': 50, 'tuiton': 40, 'race': 40,
-    'imprace': 30, 'imprelig': 30, 'from': 60, 'zipcode': 15, 'income': 45,
-    'goal': 30, 'date': 30, 'go_out': 40, 'career': 45, 'sports': 30,
-    'tvsports': 30, 'excersice': 35, 'dining': 50, 'museums': 30, 'art': 55,
-    'hiking': 30, 'gaming': 30, 'clubbing': 30, 'reading': 30, 'tv': 30,
-    'theater': 40, 'movies': 45, 'concerts': 35, 'music': 60, 'shopping': 35,
-    'yoga': 30, 'exphappy': 30, 'expnum': 30, 'match_es': 30, 'match': 30,
-    'length': 45
+imp = {
+    'age': 84, 'field': 5, 'undergra': 5, 'tuiton': 4, 'race': 4,
+    'imprace': 32, 'imprelig': 32, 'from': 6, 'zipcode': 1, 'income': 4,
+    'goal': 3, 'date': 32, 'go_out': 43, 'career': 4, 'sports': 34,
+    'tvsports': 32, 'excersice': 35, 'dining': 55, 'museums': 35, 'art': 55,
+    'hiking': 36, 'gaming': 32, 'clubbing': 36, 'reading': 36, 'tv': 36,
+    'theater': 41, 'movies': 41, 'concerts': 32, 'music': 62, 'shopping': 35,
+    'yoga': 31, 'exphappy': 3, 'expnum': 3, 'match_es': 36, 'match': 36,
+    'length': 4
 }
-seuil = 200
+seuil = 20
+
+def checkInt(s):
+    try:
+        ret = int(s)
+        return 1
+    except ValueError:
+        return 0
 
 def toInt(s):
     try:
@@ -40,25 +47,53 @@ def getLinkStrength(elem, candidate):
     shared_items = set(elem.items()) & set(candidate.items())
     for key, val in shared_items:
         if val and key and key != "id":
-            strength += int(percentage[key])
+            if imp[key] > 10:
+                diff = abs(elem[key] - candidate[key])
+                if diff <= imp[key] % 10:
+                    strength += int(abs(imp[key]) / 10)
+            else:
+                strength += imp[key]
     return strength
+
+def linkToPercent(node, ratio):
+    for link in node['links']:
+        link['strength'] = ratio / 100 * link['strength']
+
+def createLink(node, candidate, top, bottom, strength):
+    node['links'].append({
+        'elem': candidate,
+        'strength': strength
+    })
+    if strength > top:
+        top = strength
+    if strength < bottom:
+        bottom = strength
+    return top, bottom
 
 def createGraph(data):
     graph = []
+
     for elem in data:
         graph.append({
             'elem': elem,
             'links': []
         })
     for node in graph:
+        print 'links for '+str(node['elem']['id'])
+        print '_______________________'
+        bottom = 2800
+        top = 0
         for candidate in data:
+            print 'test match for '+str(candidate['id'])
             strength = getLinkStrength(elem, candidate)
+            print 'strenght: '+str(strength)
+            print ''
             if candidate != node['elem'] and strength > seuil:
-                # print str(candidate['id']) + ':' + str(node['elem']['id'])
-                node['links'].append({
-                    'elem': candidate,
-                    'strength': strength
-                })
+                # print str(candidate['id']) + ':' + str(node['elem']['id']) + ' :' + str(strength) + ' gaming : ' + str(candidate['gaming']) + ':' + str(node['elem']['gaming'])
+                print str(candidate['id']) + ':' + str(node['elem']['id'])
+                top, bottom = createLink(node, candidate, top, bottom, strength)
+        linkToPercent(node, top - bottom)
+        # print '----------------------'
     return graph
 
 def encodeFrom(value):
@@ -168,4 +203,4 @@ def readFile():
                         })
                 global_id += 1
             i += 1
-    return data
+    return data[:10]
