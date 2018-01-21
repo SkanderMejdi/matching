@@ -2,9 +2,8 @@ from build_graph import *
 import csv
 
 def link_force(graph, person, link):
-    link_elem = [elem for elem in graph if elem["elem"]["id"] == link["elem"]["id"]][0]
-    match_with_elem = [elem for elem in link_elem["links"] if elem["elem"]["id"] == person["elem"]["id"]][0]
-    return (match_with_elem["strength"] + link["strength"]) / 2, link["elem"]["id"]
+    match_with_elem = [elem for elem in link["node"]["links"] if elem["node"]["elem"]["id"] == person["elem"]["id"]][0]
+    return (match_with_elem["strength"] + link["strength"]) / 2, link["node"]["elem"]["id"]
 
 def matching(graph):
     for person in graph:
