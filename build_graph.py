@@ -1,6 +1,7 @@
 import csv
 
 global_id = 0
+graph = []
 from_cd = {}
 career_cd = {}
 field_cd = {}
@@ -60,8 +61,12 @@ def linkToPercent(node, ratio):
         link['strength'] = ratio / 100 * link['strength']
 
 def createLink(node, candidate, top, bottom, strength):
+    for i in graph:
+        if candidate['id'] == i['elem']['id']:
+            candidateNode = i
+            break
     node['links'].append({
-        'elem': candidate,
+        'node': candidateNode,
         'strength': strength
     })
     if strength > top:
@@ -71,8 +76,6 @@ def createLink(node, candidate, top, bottom, strength):
     return top, bottom
 
 def createGraph(data):
-    graph = []
-
     for elem in data:
         graph.append({
             'elem': elem,
