@@ -56,7 +56,7 @@ def getLinkStrength(elem, candidate):
                 strength += imp[key]
     return strength
 
-def linkToPercent(node, ratio, bottom, top):
+def linkToPercent(node, ratio, bottom):
     for link in node['links']:
         save = link['strength']
         if ratio == 0:
@@ -94,7 +94,7 @@ def createGraph(data):
             strength = getLinkStrength(node['elem'], candidate)
             if candidate != node['elem'] and strength > seuil:
                 top, bottom = createLink(node, candidate, top, bottom, strength)
-        linkToPercent(node, top - bottom, bottom, top)
+        linkToPercent(node, top - bottom, bottom)
     return graph
 
 def encodeFrom(value):
