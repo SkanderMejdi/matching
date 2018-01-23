@@ -25,7 +25,7 @@ imp = {
     'yoga': 31, 'exphappy': 3, 'expnum': 3, 'match_es': 36, 'match': 36,
     'length': 4
 }
-seuil = 20
+seuil = 30
 
 def checkInt(s):
     try:
@@ -56,9 +56,13 @@ def getLinkStrength(elem, candidate):
                 strength += imp[key]
     return strength
 
-def linkToPercent(node, ratio):
+def linkToPercent(node, ratio, bottom, top):
     for link in node['links']:
-        link['strength'] = ratio / 100 * link['strength']
+        save = link['strength']
+        if ratio == 0:
+            link['strength'] = 100
+        else:
+            link['strength'] =  100 / ratio * (link['strength'] - bottom)
 
 def createLink(node, candidate, top, bottom, strength):
     for i in graph:
@@ -67,7 +71,8 @@ def createLink(node, candidate, top, bottom, strength):
             break
     node['links'].append({
         'node': candidateNode,
-        'strength': strength
+        'strength': strength,
+        'avg': -1
     })
     if strength > top:
         top = strength
@@ -84,11 +89,12 @@ def createGraph(data):
     for node in graph:
         bottom = 2800
         top = 0
+        i = 0
         for candidate in data:
             strength = getLinkStrength(node['elem'], candidate)
             if candidate != node['elem'] and strength > seuil:
                 top, bottom = createLink(node, candidate, top, bottom, strength)
-        linkToPercent(node, top - bottom)
+        linkToPercent(node, top - bottom, bottom, top)
     return graph
 
 def encodeFrom(value):
@@ -199,4 +205,4 @@ def readFile():
                 global_id += 1
             i += 1
     # TODO: delete cut
-    return data[:10]
+    return data
