@@ -1,11 +1,10 @@
-#Heuristic
-#Each person got at least 5 matches in the end
-#We calculate the average of percentage between 2 connections to define our best matches
-#First, we sorted the matches with the links whose already linked with this node
-#Secondly, we completed with the bests matches to get at least 5 matches
-#These links are sorted by average to get the bests matches first
+# Heuristic
 
-
+# Each person got at least 5 matches in the end
+# We calculate the average of percentages between 2 connections to define our best commun matches
+# First, we sorted the matches with the links whose already linked with this node
+# Secondly, we completed with the bests matches to get at least 5 matches
+# These links are sorted by average to get the bests matches first
 
 from build_graph import *
 import csv
