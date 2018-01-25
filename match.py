@@ -4,7 +4,6 @@ import csv
 csv_file = None
 writer = None
 
-
 def writeFile(node):
     write = ''
     global writer
@@ -23,16 +22,16 @@ def writeFile(node):
         ])
     ])
 
-def get_best_matchs(node):
+def matching(node):
     final_links = []
     for link in node['links']:
         if link['node']['sorted'] == 1:
             for link2 in link['node']['links']:
-                if node['elem']['id'] == link2['node']['elem']['id'] and len(final_links) < 5:
+                if node['elem']['id'] == link2['node']['elem']['id'] and len(final_links) < 1:
                     final_links.append(link)
 
     for link in node['links']:
-        if link['node']['sorted'] == 0 and len(final_links) < 5:
+        if link['node']['sorted'] == 0 and len(final_links) < 1:
             final_links.append(link)
 
     final_links = sorted(
@@ -43,14 +42,14 @@ def get_best_matchs(node):
     node['links'] = final_links
     return node
 
-def matching(nodes):
+def processGraph(nodes):
     for node in nodes:
-        for link1 in node['links']:
-            if link1['avg'] == -1:
-                for link2 in link1['node']['links']:
+        for link in node['links']:
+            if link['avg'] == -1:
+                for link2 in link['node']['links']:
                     if node['elem']['id'] == link2['node']['elem']['id']:
-                        avg = (link1['strength'] + link2['strength']) / 2
-                        link1['avg'] = avg
+                        avg = (link['strength'] + link2['strength']) / 2
+                        link['avg'] = avg
                         link2['avg'] = avg
         node['links'] = sorted(
             node['links'],
@@ -58,7 +57,7 @@ def matching(nodes):
             reverse=True
         )
         node['sorted'] = 1
-        node = get_best_matchs(node)
+        node = matching(node)
         writeFile(node)
 
 def openFile():
@@ -75,10 +74,11 @@ def openFile():
 
 def main():
     global csv_file
+
     openFile()
     data = readFile()
     nodes = createGraph(data)
-    matching(graph)
+    processGraph(graph)
     csv_file.close()
 
 main()
