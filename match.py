@@ -31,9 +31,16 @@ def get_best_matchs(node):
                 if node['elem']['id'] == link2['node']['elem']['id'] and len(final_links) < 5:
                     final_links.append(link)
 
-    for link in node['links']:
-        if link['node']['sorted'] == 0 and len(final_links) < 5:
-            final_links.append(link)
+    if len(final_links) < 5:
+        for link3 in node['links']:
+            if link3 not in final_links and len(final_links) < 5:
+                final_links.append(link3)
+                if node['elem']['id'] not in (link4['node']['elem']['id'] for link4 in link3['node']['links']):
+                    link3['node']['links'].append({
+                        'node': node,
+                        'strength': 0,
+                        'avg': -1
+                    })
 
     final_links = sorted(
         final_links,
@@ -59,6 +66,8 @@ def matching(nodes):
         )
         node['sorted'] = 1
         node = get_best_matchs(node)
+
+    for node in nodes:
         writeFile(node)
 
 def openFile():
