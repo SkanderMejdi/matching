@@ -1,3 +1,12 @@
+#Heuristic
+#Each person got at least 5 matches in the end
+#We calculate the average of percentage between 2 connections to define our best matches
+#First, we sorted the matches with the links whose already linked with this node
+#Secondly, we completed with the bests matches to get at least 5 matches
+#These links are sorted by average to get the bests matches first
+
+
+
 from build_graph import *
 import csv
 
@@ -23,7 +32,7 @@ def writeFile(node):
         ])
     ])
 
-# Matching from avg strenght calculation
+# Matching from avg strength calculation
 def matching(node):
     final_links = []
     for link in node['links']:
@@ -89,7 +98,7 @@ def main():
 
     openFile()
     data = readFile()
-    nodes = createGraph(data)
+    createGraph(data)
     processGraph(graph)
     csv_file.close()
 

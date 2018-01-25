@@ -116,7 +116,6 @@ def createGraph(data):
             if candidate != node['elem'] and strength > seuil:
                 top, bottom = createLink(node, candidate, top, bottom, strength)
         linkToPercent(node, top - bottom, bottom)
-    return graph
 
 # METHODS FOR VARS ENCODING NORMALIZING
 
