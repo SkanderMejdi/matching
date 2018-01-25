@@ -4,6 +4,7 @@ import csv
 csv_file = None
 writer = None
 
+# Write one line in result.csv
 def writeFile(node):
     write = ''
     global writer
@@ -22,6 +23,7 @@ def writeFile(node):
         ])
     ])
 
+# Matching from avg strenght calculation
 def matching(node):
     final_links = []
     for link in node['links']:
@@ -42,6 +44,7 @@ def matching(node):
     node['links'] = final_links
     return node
 
+# Calculate avg strenght percentages
 def processGraph(nodes):
     for node in nodes:
         for link in node['links']:
