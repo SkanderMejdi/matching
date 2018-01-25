@@ -1,12 +1,22 @@
 import csv
 
+# Unique id
 global_id = 0
+
+# Array of nodes from graph
 graph = []
+
+# DICT FOR ENCODED FIELD
+
 from_cd = {}
 career_cd = {}
 field_cd = {}
 zip_cd = {}
 undergra_cd = {}
+
+# !DICT FOR ENCODED FIELD
+
+# Used fields
 use = [
     'id', 'gender', 'age', 'field', 'undergra', 'tuiton', 'race', 'imprace',
     'imprelig', 'from', 'zipcode', 'income', 'goal', 'date', 'go_out',
@@ -15,6 +25,8 @@ use = [
     'concerts', 'music', 'shopping', 'yoga', 'exphappy', 'expnum',
     'match_es', 'length'
 ]
+
+# Importance of each field for strenght calculation
 imp = {
     'age': 84, 'field': 5, 'undergra': 5, 'tuiton': 4, 'race': 4,
     'imprace': 32, 'imprelig': 32, 'from': 6, 'zipcode': 1, 'income': 4,
@@ -25,7 +37,9 @@ imp = {
     'yoga': 31, 'exphappy': 3, 'expnum': 3, 'match_es': 36, 'match': 36,
     'length': 4
 }
-seuil = 30
+
+# Minimum strenght for link creation
+seuil = 25
 
 def checkInt(s):
     try:
@@ -41,6 +55,7 @@ def toInt(s):
     except ValueError:
         return s
 
+# Get link strenght between to nodes
 def getLinkStrength(elem, candidate):
     strength = 0
     if elem['gender'] == candidate['gender']:
@@ -56,6 +71,7 @@ def getLinkStrength(elem, candidate):
                 strength += imp[key]
     return strength
 
+# Calculate percentages with top and bottom strenght of links
 def linkToPercent(node, ratio, bottom):
     for link in node['links']:
         save = link['strength']
@@ -64,6 +80,8 @@ def linkToPercent(node, ratio, bottom):
         else:
             link['strength'] =  100 / ratio * (link['strength'] - bottom)
 
+# Create link between to nodes
+# Update top and bottom strength link for the node
 def createLink(node, candidate, top, bottom, strength):
     for i in graph:
         if candidate['id'] == i['elem']['id']:
@@ -80,6 +98,8 @@ def createLink(node, candidate, top, bottom, strength):
         bottom = strength
     return top, bottom
 
+# Create graph from array of data and return an array of nodes
+# Trigger strength calculation to create or not a link
 def createGraph(data):
     for elem in data:
         graph.append({
@@ -96,6 +116,8 @@ def createGraph(data):
                 top, bottom = createLink(node, candidate, top, bottom, strength)
         linkToPercent(node, top - bottom, bottom)
     return graph
+
+# METHODS FOR VARS ENCODING NORMALIZING
 
 def encodeFrom(value):
     if not value in from_cd.keys():
@@ -146,6 +168,9 @@ def normalizeMatchEs(value):
 def setId(value):
     return global_id
 
+# !METHODS FOR VARS ENCODING NORMALIZING
+
+# Association of field with encoding/normalizing function
 vars_treatment = {
     'from': encodeFrom,
     'id': setId,
@@ -158,13 +183,15 @@ vars_treatment = {
     "career": encodeCareer
 }
 
-def getJmp():
+# Count lines in dataset and determine jump to extract @max_lines lines
+def getJmp(max_lines):
     with open('data.csv', 'rb') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
-        jmp = (sum(1 for line in reader) - 1) / 500
+        jmp = (sum(1 for line in reader) - 1) / max_lines
         csvfile.close()
     return jmp
 
+# Get indexes of used field
 def getIndexes(row):
     j = 0
     keys = []
@@ -179,11 +206,12 @@ def getIndexes(row):
     global_id += 1
     return indexes, keys
 
+# Read file and get a formatted array
 def readFile():
-    data = []
-
     i = 0
-    jmp = getJmp()
+    data = []
+    jmp = getJmp(500)
+
     global global_id
     with open('data.csv', 'rb') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
@@ -192,6 +220,7 @@ def readFile():
             if global_id == 0:
                 indexes, keys = getIndexes(row)
             elif float(i) % jmp == 0:
+                empty = 0
                 data.append({})
                 for j in indexes:
                     if row[j] != '' and keys[j] in vars_treatment.keys():
@@ -202,7 +231,12 @@ def readFile():
                         data[global_id - 1].update({
                             keys[j]: toInt(row[j])
                         })
-                global_id += 1
+                    if row[j] == '':
+                        empty += 1
+                if empty > 10:
+                    data = data[:-1]
+                else:
+                    global_id += 1
             i += 1
-    # TODO: delete cut
+    csvfile.close()
     return data
