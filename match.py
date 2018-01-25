@@ -4,29 +4,6 @@ import csv
 csv_file = None
 writer = None
 
-# def link_force(graph, person, link):
-#     match_with_elem = [elem for elem in link["node"]["links"] if elem["node"]["elem"]["id"] == person["elem"]["id"]][0]
-#     return (match_with_elem["strength"] + link["strength"]) / 2, link["node"]["elem"]["id"]
-#
-# def matching(graph):
-#     for person in graph:
-#         link_forces = []
-#         for link in person["links"]:
-#             matching_strength, matching_id = link_force(graph, person, link)
-#             link_forces.append({'strength': matching_strength, 'id': matching_id})
-#             link_forces = sorted(link_forces, key=lambda person:person['strength'], reverse=True)
-#         best_links = ""
-#         for index, link_to_write in enumerate(link_forces):
-#             if index == 5:
-#                 break
-#             if best_links:
-#                 best_links = best_links + "," + str(link_to_write["id"])
-#             else:
-#                 best_links = str(link_to_write["id"])
-#         with open('result.csv', 'a') as csvfile:
-#             spamwriter = csv.writer(csvfile, delimiter=' ',
-#                                     quotechar='|', quoting=csv.QUOTE_MINIMAL)
-#             spamwriter.writerow([person["elem"]["id"], ";", best_links])
 
 def writeFile(node):
     write = ''
@@ -51,12 +28,12 @@ def get_best_matchs(node):
     for link in node['links']:
         if link['node']['sorted'] == 1:
             for link2 in link['node']['links']:
-                if node['elem']['id'] == link2['node']['elem']['id']:
+                if node['elem']['id'] == link2['node']['elem']['id'] and len(final_links) < 5:
                     final_links.append(link)
-    if len(final_links) < 5:
-        for link3 in node['links']:
-            if link3 not in final_links and len(final_links) < 5:
-                final_links.append(link3)
+
+    for link in node['links']:
+        if link['node']['sorted'] == 0 and len(final_links) < 5:
+            final_links.append(link)
 
     final_links = sorted(
         final_links,
