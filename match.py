@@ -46,6 +46,26 @@ def writeFile(node):
         ])
     ])
 
+def get_best_matchs(node):
+    final_links = []
+    for link in node['links']:
+        if link['node']['sorted'] == 1:
+            for link2 in link['node']['links']:
+                if node['elem']['id'] == link2['node']['elem']['id']:
+                    final_links.append(link)
+    if len(final_links) < 5:
+        for link3 in node['links']:
+            if link3 not in final_links and len(final_links) < 5:
+                final_links.append(link3)
+
+    final_links = sorted(
+        final_links,
+        key=lambda node: node['avg'],
+        reverse=True
+    )
+    node['links'] = final_links
+    return node
+
 def matching(nodes):
     for node in nodes:
         for link1 in node['links']:
@@ -59,13 +79,10 @@ def matching(nodes):
             node['links'],
             key=lambda node:node['avg'],
             reverse=True
-        )[:5]
+        )
+        node['sorted'] = 1
+        node = get_best_matchs(node)
         writeFile(node)
-
-
-def deleteFileContent():
-    with open('result.csv', 'w'):
-        pass
 
 def openFile():
     global csv_file
