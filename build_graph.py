@@ -84,7 +84,8 @@ def createGraph(data):
     for elem in data:
         graph.append({
             'elem': elem,
-            'links': []
+            'links': [],
+            'sorted': 0
         })
     for node in graph:
         bottom = 2800
